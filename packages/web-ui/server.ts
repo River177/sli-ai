@@ -6,11 +6,24 @@
  */
 
 import { createServer, IncomingMessage, ServerResponse } from 'http';
+import { spawn, ChildProcess } from 'child_process';
+import { writeFile, mkdir } from 'fs/promises';
+import { existsSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { config } from 'dotenv';
 
 config();
 
 const PORT = process.env.PORT || 3000;
+const SLIDEV_PORT = process.env.SLIDEV_PORT || 3030;
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const SLIDES_DIR = join(__dirname, '.slidev-preview');
+const SLIDES_FILE = join(SLIDES_DIR, 'slides.md');
+
+// Slidev process management
+let slidevProcess: ChildProcess | null = null;
+let slidevReady = false;
 
 // Types
 interface ModelConfig {
@@ -62,6 +75,111 @@ function sendSSE(res: ServerResponse, event: string, data: any) {
   res.write(`event: ${event}\n`);
   res.write(`data: ${JSON.stringify(data)}\n\n`);
 }
+
+// Save markdown to file for Slidev preview
+async function saveSlides(markdown: string): Promise<void> {
+  if (!existsSync(SLIDES_DIR)) {
+    await mkdir(SLIDES_DIR, { recursive: true });
+  }
+  await writeFile(SLIDES_FILE, markdown, 'utf-8');
+}
+
+// Start Slidev dev server
+async function startSlidev(): Promise<{ url: string; started: boolean }> {
+  const slidevUrl = `http://localhost:${SLIDEV_PORT}`;
+  
+  // If already running and ready, return immediately
+  if (slidevProcess && slidevReady) {
+    return { url: slidevUrl, started: false };
+  }
+  
+  // Kill existing process if any
+  if (slidevProcess) {
+    slidevProcess.kill();
+    slidevProcess = null;
+    slidevReady = false;
+  }
+  
+  return new Promise((resolve, reject) => {
+    console.log('🎬 Starting Slidev dev server...');
+    
+    // Start slidev with the slides file
+    slidevProcess = spawn('npx', [
+      'slidev',
+      SLIDES_FILE,
+      '--port', String(SLIDEV_PORT),
+      '--open', 'false',
+      '--remote', // Allow iframe access
+    ], {
+      cwd: __dirname,
+      shell: true,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    
+    let output = '';
+    const timeout = setTimeout(() => {
+      if (!slidevReady) {
+        // Assume it's ready after timeout
+        slidevReady = true;
+        console.log('✅ Slidev server assumed ready');
+        resolve({ url: slidevUrl, started: true });
+      }
+    }, 10000);
+    
+    slidevProcess.stdout?.on('data', (data) => {
+      output += data.toString();
+      console.log('[Slidev]', data.toString().trim());
+      
+      // Check if server is ready
+      if (output.includes('http://localhost:') || output.includes('slidev started')) {
+        clearTimeout(timeout);
+        slidevReady = true;
+        console.log('✅ Slidev server ready');
+        resolve({ url: slidevUrl, started: true });
+      }
+    });
+    
+    slidevProcess.stderr?.on('data', (data) => {
+      console.error('[Slidev Error]', data.toString().trim());
+    });
+    
+    slidevProcess.on('error', (err) => {
+      clearTimeout(timeout);
+      console.error('❌ Failed to start Slidev:', err);
+      slidevProcess = null;
+      slidevReady = false;
+      reject(err);
+    });
+    
+    slidevProcess.on('exit', (code) => {
+      clearTimeout(timeout);
+      console.log(`Slidev exited with code ${code}`);
+      slidevProcess = null;
+      slidevReady = false;
+    });
+  });
+}
+
+// Stop Slidev server
+function stopSlidev() {
+  if (slidevProcess) {
+    slidevProcess.kill();
+    slidevProcess = null;
+    slidevReady = false;
+    console.log('🛑 Slidev server stopped');
+  }
+}
+
+// Cleanup on exit
+process.on('exit', stopSlidev);
+process.on('SIGINT', () => {
+  stopSlidev();
+  process.exit();
+});
+process.on('SIGTERM', () => {
+  stopSlidev();
+  process.exit();
+});
 
 // Generate sample markdown (fallback when no API key)
 function generateSampleMarkdown(topic: string, slideCount: number): string {
@@ -453,6 +571,78 @@ flowchart TD
             break;
           }
 
+          // Start Slidev preview
+          case 'preview': {
+            const { markdown } = body;
+            
+            if (!markdown) {
+              sendJson(res, 400, { success: false, error: 'Markdown content is required' });
+              break;
+            }
+
+            try {
+              // Save slides to file
+              await saveSlides(markdown);
+              console.log('📄 Slides saved to:', SLIDES_FILE);
+              
+              // Start Slidev server
+              const { url, started } = await startSlidev();
+              
+              sendJson(res, 200, { 
+                success: true, 
+                data: { 
+                  url,
+                  port: SLIDEV_PORT,
+                  started,
+                  message: started ? 'Slidev server started' : 'Using existing Slidev server'
+                } 
+              });
+            } catch (error: any) {
+              console.error('❌ Preview error:', error.message);
+              sendJson(res, 500, { success: false, error: error.message });
+            }
+            break;
+          }
+
+          // Update slides content (hot reload)
+          case 'update-slides': {
+            const { markdown } = body;
+            
+            if (!markdown) {
+              sendJson(res, 400, { success: false, error: 'Markdown content is required' });
+              break;
+            }
+
+            try {
+              await saveSlides(markdown);
+              console.log('🔄 Slides updated');
+              sendJson(res, 200, { success: true, data: { updated: true } });
+            } catch (error: any) {
+              sendJson(res, 500, { success: false, error: error.message });
+            }
+            break;
+          }
+
+          // Stop Slidev server
+          case 'stop-preview': {
+            stopSlidev();
+            sendJson(res, 200, { success: true, data: { stopped: true } });
+            break;
+          }
+
+          // Get preview status
+          case 'preview-status': {
+            sendJson(res, 200, { 
+              success: true, 
+              data: { 
+                running: slidevReady,
+                url: slidevReady ? `http://localhost:${SLIDEV_PORT}` : null,
+                port: SLIDEV_PORT
+              } 
+            });
+            break;
+          }
+
           default:
             sendJson(res, 404, { success: false, error: 'Not found' });
         }
@@ -471,19 +661,23 @@ flowchart TD
     console.log(`
 🚀 Slidev-AI API Server
 ━━━━━━━━━━━━━━━━━━━━━━
-📡 URL: http://localhost:${PORT}
+📡 API Server: http://localhost:${PORT}
+🎬 Slidev Preview: http://localhost:${SLIDEV_PORT} (on demand)
 📦 Using: @slidev-ai/core with Vercel AI SDK
 
 API Endpoints:
-  GET  /api/slidev-ai/providers         - List available AI providers
-  POST /api/slidev-ai/test-model        - Test model connection
-  POST /api/slidev-ai/generate          - Generate presentation
-  POST /api/slidev-ai/generate-stream   - Generate with SSE streaming
-  POST /api/slidev-ai/edit-slide        - Edit a slide
-  POST /api/slidev-ai/edit-slide-stream - Edit with SSE streaming
-  POST /api/slidev-ai/generate-diagram  - Generate Mermaid diagram
-  POST /api/slidev-ai/check-layout      - Check layout issues
-  POST /api/slidev-ai/suggest-improvements - Get AI suggestions
+  GET  /api/slidev-ai/providers          - List available AI providers
+  POST /api/slidev-ai/test-model         - Test model connection
+  POST /api/slidev-ai/generate           - Generate presentation
+  POST /api/slidev-ai/generate-stream    - Generate with SSE streaming
+  POST /api/slidev-ai/edit-slide         - Edit a slide
+  POST /api/slidev-ai/edit-slide-stream  - Edit with SSE streaming
+  POST /api/slidev-ai/generate-diagram   - Generate Mermaid diagram
+  POST /api/slidev-ai/check-layout       - Check layout issues
+  POST /api/slidev-ai/preview            - Start Slidev preview server
+  POST /api/slidev-ai/update-slides      - Update slides (hot reload)
+  POST /api/slidev-ai/stop-preview       - Stop preview server
+  GET  /api/slidev-ai/preview-status     - Check preview server status
 
 Press Ctrl+C to stop
 `);

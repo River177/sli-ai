@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import ModelSettings from '../components/ModelSettings.vue';
 
@@ -22,6 +22,11 @@ const isGenerating = ref(false);
 const currentSlide = ref(0);
 const layoutIssues = ref<any[]>([]);
 const activeTab = ref<'generate' | 'edit' | 'diagram' | 'settings'>('generate');
+
+// Slidev preview state
+const previewUrl = ref('');
+const isPreviewRunning = ref(false);
+const isStartingPreview = ref(false);
 
 // Model config
 const modelConfig = ref<ModelConfig>({
@@ -375,9 +380,79 @@ function onSettingsSaved() {
   activeTab.value = 'generate';
 }
 
+// Slidev preview functions
+async function startPreview() {
+  if (!markdown.value) return;
+  
+  isStartingPreview.value = true;
+  
+  try {
+    const response = await fetch('/api/slidev-ai/preview', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ markdown: markdown.value }),
+    });
+    
+    const data = await response.json();
+    if (data.success) {
+      previewUrl.value = data.data.url;
+      isPreviewRunning.value = true;
+      console.log('Slidev preview started at:', data.data.url);
+    }
+  } catch (error) {
+    console.error('Failed to start preview:', error);
+  } finally {
+    isStartingPreview.value = false;
+  }
+}
+
+async function updatePreview() {
+  if (!isPreviewRunning.value || !markdown.value) return;
+  
+  try {
+    await fetch('/api/slidev-ai/update-slides', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ markdown: markdown.value }),
+    });
+  } catch (error) {
+    console.error('Failed to update preview:', error);
+  }
+}
+
+async function checkPreviewStatus() {
+  try {
+    const response = await fetch('/api/slidev-ai/preview-status');
+    const data = await response.json();
+    if (data.success && data.data.running) {
+      previewUrl.value = data.data.url;
+      isPreviewRunning.value = true;
+    }
+  } catch {
+    // Ignore errors
+  }
+}
+
+// Auto-update preview when markdown changes
+let updateDebounce: ReturnType<typeof setTimeout> | null = null;
+watch(markdown, () => {
+  if (isPreviewRunning.value) {
+    if (updateDebounce) clearTimeout(updateDebounce);
+    updateDebounce = setTimeout(updatePreview, 1000);
+  }
+});
+
+// Open preview in new tab
+function openPreviewInNewTab() {
+  if (previewUrl.value) {
+    window.open(previewUrl.value, '_blank');
+  }
+}
+
 // Initialize
 onMounted(() => {
   loadModelConfig();
+  checkPreviewStatus();
   const queryTopic = route.query.topic as string;
   if (queryTopic) {
     topic.value = queryTopic;
@@ -657,12 +732,43 @@ onMounted(() => {
           <!-- Preview Panel -->
           <div class="preview-panel">
             <div class="preview-header">
-              <span>当前幻灯片预览</span>
+              <span>Slidev 预览</span>
+              <div class="preview-actions">
+                <button 
+                  v-if="isPreviewRunning"
+                  class="btn btn-ghost btn-sm"
+                  @click="openPreviewInNewTab"
+                  title="在新窗口打开"
+                >
+                  ↗
+                </button>
+              </div>
             </div>
             <div class="preview-content">
-              <pre v-if="currentSlideContent">{{ currentSlideContent }}</pre>
-              <div v-else class="empty-state">
-                <p>选择一个幻灯片查看预览</p>
+              <!-- Slidev iframe -->
+              <iframe 
+                v-if="isPreviewRunning && previewUrl"
+                :src="`${previewUrl}/${currentSlide + 1}`"
+                class="slidev-iframe"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
+              />
+              
+              <!-- Start preview button -->
+              <div v-else class="preview-placeholder">
+                <div class="placeholder-content">
+                  <span class="placeholder-icon">🎬</span>
+                  <p>启动 Slidev 预览</p>
+                  <p class="text-muted">实时渲染真实的 Slidev 效果</p>
+                  <button 
+                    class="btn btn-primary"
+                    :disabled="!markdown || isStartingPreview"
+                    @click="startPreview"
+                  >
+                    <span v-if="isStartingPreview" class="spinner"></span>
+                    <span v-else>▶ 启动预览</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -915,11 +1021,68 @@ onMounted(() => {
   flex-direction: column;
 }
 
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  border-left: 1px solid var(--color-border);
+}
+
+.preview-actions {
+  display: flex;
+  gap: var(--spacing-xs);
+}
+
 .preview-content {
   flex: 1;
-  padding: var(--spacing-md);
-  overflow: auto;
+  overflow: hidden;
   background: var(--color-bg-primary);
+  border-left: 1px solid var(--color-border);
+}
+
+/* Slidev iframe */
+.slidev-iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #121212;
+}
+
+/* Preview placeholder */
+.preview-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0a0a0f 0%, #16213e 100%);
+}
+
+.placeholder-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  text-align: center;
+  padding: var(--spacing-xl);
+}
+
+.placeholder-icon {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-sm);
+}
+
+.placeholder-content p {
+  margin: 0;
+}
+
+.placeholder-content .text-muted {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-md);
 }
 
 .preview-content pre {
