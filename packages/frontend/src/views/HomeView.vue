@@ -55,12 +55,12 @@ function startGenerate() {
       <div class="container">
         <div class="hero-content fade-in">
           <span class="hero-badge">
-            <span class="badge-dot"></span>
+            <span class="badge-dot" />
             AI-Powered Presentation
           </span>
           
           <h1 class="hero-title">
-            用 AI 创建<br />
+            用 AI 创建<br>
             <span class="gradient-text">惊艳的演示文稿</span>
           </h1>
           
@@ -76,10 +76,20 @@ function startGenerate() {
               class="hero-input"
               placeholder="输入演示文稿主题，例如：TypeScript 入门指南"
               @keyup.enter="startGenerate"
-            />
-            <button class="btn btn-primary btn-lg" @click="startGenerate">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 5v14M5 12h14"/>
+            >
+            <button
+              class="btn btn-primary btn-lg"
+              @click="startGenerate"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M12 5v14M5 12h14" />
               </svg>
               开始生成
             </button>
@@ -105,7 +115,7 @@ function startGenerate() {
           <div class="visual-card">
             <div class="visual-header">
               <div class="visual-dots">
-                <span></span><span></span><span></span>
+                <span /><span /><span />
               </div>
               <span class="visual-title">slides.md</span>
             </div>
@@ -140,7 +150,11 @@ title: TypeScript 入门指南
         </div>
 
         <div class="features-grid">
-          <div v-for="feature in features" :key="feature.title" class="feature-card card">
+          <div
+            v-for="feature in features"
+            :key="feature.title"
+            class="feature-card card"
+          >
             <span class="feature-icon">{{ feature.icon }}</span>
             <h3>{{ feature.title }}</h3>
             <p>{{ feature.description }}</p>
@@ -155,7 +169,10 @@ title: TypeScript 入门指南
         <div class="cta-content">
           <h2>准备好开始了吗？</h2>
           <p>立即体验 AI 驱动的演示文稿生成</p>
-          <router-link to="/editor" class="btn btn-primary btn-lg">
+          <router-link
+            to="/editor"
+            class="btn btn-primary btn-lg"
+          >
             进入编辑器
           </router-link>
         </div>

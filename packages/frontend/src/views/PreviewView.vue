@@ -47,24 +47,36 @@ document.addEventListener('keydown', handleKeydown);
     <div class="preview-container">
       <!-- Slide Display -->
       <div class="slide-display">
-        <div v-if="slides.length" class="slide-content">
+        <div
+          v-if="slides.length"
+          class="slide-content"
+        >
           <pre>{{ slides[currentSlide] }}</pre>
         </div>
-        <div v-else class="empty-state">
+        <div
+          v-else
+          class="empty-state"
+        >
           <h2>没有演示文稿内容</h2>
           <p>请先在编辑器中生成或编写内容</p>
-          <router-link to="/editor" class="btn btn-primary">
+          <router-link
+            to="/editor"
+            class="btn btn-primary"
+          >
             前往编辑器
           </router-link>
         </div>
       </div>
 
       <!-- Controls -->
-      <div v-if="slides.length" class="controls">
+      <div
+        v-if="slides.length"
+        class="controls"
+      >
         <button 
           class="btn btn-ghost" 
-          @click="prevSlide"
           :disabled="currentSlide === 0"
+          @click="prevSlide"
         >
           ← 上一页
         </button>
@@ -77,15 +89,18 @@ document.addEventListener('keydown', handleKeydown);
         
         <button 
           class="btn btn-ghost" 
-          @click="nextSlide"
           :disabled="currentSlide === totalSlides - 1"
+          @click="nextSlide"
         >
           下一页 →
         </button>
       </div>
 
       <!-- Progress Bar -->
-      <div v-if="slides.length" class="progress-bar">
+      <div
+        v-if="slides.length"
+        class="progress-bar"
+      >
         <div 
           class="progress-fill" 
           :style="{ width: `${((currentSlide + 1) / totalSlides) * 100}%` }"

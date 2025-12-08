@@ -294,7 +294,9 @@ onMounted(() => {
   <div class="model-settings">
     <div class="settings-header">
       <h3>🤖 AI 模型配置</h3>
-      <p class="description">选择并配置你的 AI 模型提供商</p>
+      <p class="description">
+        选择并配置你的 AI 模型提供商
+      </p>
     </div>
 
     <!-- Provider Selection -->
@@ -315,34 +317,55 @@ onMounted(() => {
     </div>
 
     <!-- Model Selection -->
-    <div v-if="!isCustomProvider" class="form-section">
+    <div
+      v-if="!isCustomProvider"
+      class="form-section"
+    >
       <label class="label">模型</label>
-      <select v-model="config.model" class="select">
-        <option v-for="model in availableModels" :key="model.id" :value="model.id">
+      <select
+        v-model="config.model"
+        class="select"
+      >
+        <option
+          v-for="model in availableModels"
+          :key="model.id"
+          :value="model.id"
+        >
           {{ model.name }} - {{ model.description }}
         </option>
       </select>
-      <p v-if="selectedModel?.maxTokens" class="hint">
+      <p
+        v-if="selectedModel?.maxTokens"
+        class="hint"
+      >
         最大 Token: {{ selectedModel.maxTokens.toLocaleString() }}
       </p>
     </div>
 
     <!-- Custom Model Name -->
-    <div v-if="isCustomProvider" class="form-section">
+    <div
+      v-if="isCustomProvider"
+      class="form-section"
+    >
       <label class="label">模型名称</label>
       <input
         v-model="customModelName"
         type="text"
         class="input"
         placeholder="例如: llama-3-70b, mixtral-8x7b"
-      />
+      >
     </div>
 
     <!-- API Key -->
     <div class="form-section">
       <label class="label">
         API Key
-        <a v-if="selectedProvider?.website" :href="selectedProvider.website" target="_blank" class="link">
+        <a
+          v-if="selectedProvider?.website"
+          :href="selectedProvider.website"
+          target="_blank"
+          class="link"
+        >
           获取密钥 ↗
         </a>
       </label>
@@ -352,15 +375,21 @@ onMounted(() => {
           :type="showPassword ? 'text' : 'password'"
           class="input"
           placeholder="输入 API Key"
-        />
-        <button class="btn btn-ghost" @click="showPassword = !showPassword">
+        >
+        <button
+          class="btn btn-ghost"
+          @click="showPassword = !showPassword"
+        >
           {{ showPassword ? '🙈' : '👁' }}
         </button>
       </div>
     </div>
 
     <!-- Base URL -->
-    <div v-if="selectedProvider?.supportsCustomBaseUrl" class="form-section">
+    <div
+      v-if="selectedProvider?.supportsCustomBaseUrl"
+      class="form-section"
+    >
       <label class="label">
         API 地址
         <span class="optional">(可选)</span>
@@ -370,17 +399,25 @@ onMounted(() => {
         type="text"
         class="input"
         :placeholder="selectedProvider?.defaultBaseUrl || '自定义 API 地址'"
-      />
-      <p class="hint">使用代理或私有部署时可修改此地址</p>
+      >
+      <p class="hint">
+        使用代理或私有部署时可修改此地址
+      </p>
     </div>
 
     <!-- Advanced Options -->
     <div class="form-section">
-      <button class="toggle-advanced" @click="showAdvancedOptions = !showAdvancedOptions">
+      <button
+        class="toggle-advanced"
+        @click="showAdvancedOptions = !showAdvancedOptions"
+      >
         {{ showAdvancedOptions ? '▼' : '▶' }} 高级选项
       </button>
       
-      <div v-if="showAdvancedOptions" class="advanced-options">
+      <div
+        v-if="showAdvancedOptions"
+        class="advanced-options"
+      >
         <!-- Temperature -->
         <div class="form-group">
           <label class="label">
@@ -394,8 +431,10 @@ onMounted(() => {
             max="1"
             step="0.1"
             class="slider"
-          />
-          <p class="hint">较低值更确定，较高值更有创意</p>
+          >
+          <p class="hint">
+            较低值更确定，较高值更有创意
+          </p>
         </div>
 
         <!-- Max Tokens -->
@@ -407,29 +446,40 @@ onMounted(() => {
             class="input"
             min="100"
             max="128000"
-          />
+          >
         </div>
       </div>
     </div>
 
     <!-- Actions -->
     <div class="actions">
-      <button class="btn btn-secondary" @click="testConnection" :disabled="!config.apiKey || testStatus === 'testing'">
-        <span v-if="testStatus === 'testing'" class="spinner"></span>
+      <button
+        class="btn btn-secondary"
+        :disabled="!config.apiKey || testStatus === 'testing'"
+        @click="testConnection"
+      >
+        <span
+          v-if="testStatus === 'testing'"
+          class="spinner"
+        />
         {{ testStatus === 'testing' ? '测试中...' : '🧪 测试连接' }}
       </button>
       <button 
         class="btn" 
         :class="saveStatus === 'saved' ? 'btn-success' : 'btn-primary'"
-        @click="saveConfig" 
-        :disabled="!config.apiKey"
+        :disabled="!config.apiKey" 
+        @click="saveConfig"
       >
         {{ saveStatus === 'saved' ? '✅ 已保存' : '💾 保存配置' }}
       </button>
     </div>
 
     <!-- Test Result -->
-    <div v-if="testMessage" class="test-result" :class="testStatus">
+    <div
+      v-if="testMessage"
+      class="test-result"
+      :class="testStatus"
+    >
       {{ testMessage }}
     </div>
   </div>

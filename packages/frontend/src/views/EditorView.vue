@@ -501,7 +501,10 @@ onMounted(() => {
         </div>
 
         <!-- Generate Tab -->
-        <div v-if="activeTab === 'generate'" class="sidebar-content">
+        <div
+          v-if="activeTab === 'generate'"
+          class="sidebar-content"
+        >
           <div class="form-group">
             <label class="label">主题</label>
             <input 
@@ -509,34 +512,63 @@ onMounted(() => {
               type="text"
               class="input"
               placeholder="输入演示文稿主题"
-            />
+            >
           </div>
 
           <div class="form-group">
             <label class="label">幻灯片数量</label>
-            <select v-model="slideCount" class="select">
-              <option :value="5">5 页</option>
-              <option :value="8">8 页</option>
-              <option :value="10">10 页</option>
-              <option :value="15">15 页</option>
+            <select
+              v-model="slideCount"
+              class="select"
+            >
+              <option :value="5">
+                5 页
+              </option>
+              <option :value="8">
+                8 页
+              </option>
+              <option :value="10">
+                10 页
+              </option>
+              <option :value="15">
+                15 页
+              </option>
             </select>
           </div>
 
           <div class="form-group">
             <label class="label">语言</label>
-            <select v-model="language" class="select">
-              <option value="zh">中文</option>
-              <option value="en">English</option>
+            <select
+              v-model="language"
+              class="select"
+            >
+              <option value="zh">
+                中文
+              </option>
+              <option value="en">
+                English
+              </option>
             </select>
           </div>
 
           <div class="form-group">
             <label class="label">风格</label>
-            <select v-model="style" class="select">
-              <option value="professional">专业</option>
-              <option value="casual">轻松</option>
-              <option value="academic">学术</option>
-              <option value="creative">创意</option>
+            <select
+              v-model="style"
+              class="select"
+            >
+              <option value="professional">
+                专业
+              </option>
+              <option value="casual">
+                轻松
+              </option>
+              <option value="academic">
+                学术
+              </option>
+              <option value="creative">
+                创意
+              </option>
             </select>
           </div>
 
@@ -546,13 +578,19 @@ onMounted(() => {
             :disabled="isGenerating || !topic.trim()"
             @click="generatePresentation"
           >
-            <span v-if="isGenerating" class="spinner"></span>
+            <span
+              v-if="isGenerating"
+              class="spinner"
+            />
             <span v-else>🚀 生成演示文稿</span>
           </button>
         </div>
 
         <!-- Edit Tab -->
-        <div v-if="activeTab === 'edit'" class="sidebar-content">
+        <div
+          v-if="activeTab === 'edit'"
+          class="sidebar-content"
+        >
           <div class="current-slide-info">
             <span class="badge">当前: 第 {{ currentSlide + 1 }} 页</span>
           </div>
@@ -573,12 +611,18 @@ onMounted(() => {
             :disabled="isGenerating || !editInstruction.trim() || !markdown"
             @click="editSlide"
           >
-            <span v-if="isGenerating" class="spinner"></span>
+            <span
+              v-if="isGenerating"
+              class="spinner"
+            />
             <span v-else>✏️ 应用修改</span>
           </button>
 
           <!-- Layout Issues -->
-          <div v-if="issuesForCurrentSlide.length > 0" class="layout-issues">
+          <div
+            v-if="issuesForCurrentSlide.length > 0"
+            class="layout-issues"
+          >
             <h4>布局问题</h4>
             <div 
               v-for="issue in issuesForCurrentSlide" 
@@ -598,22 +642,44 @@ onMounted(() => {
         </div>
 
         <!-- Diagram Tab -->
-        <div v-if="activeTab === 'diagram'" class="sidebar-content">
+        <div
+          v-if="activeTab === 'diagram'"
+          class="sidebar-content"
+        >
           <div class="current-slide-info">
             <span class="badge">当前: 第 {{ currentSlide + 1 }} 页</span>
           </div>
 
           <div class="form-group">
             <label class="label">图表类型</label>
-            <select v-model="diagramType" class="select">
-              <option value="flowchart">流程图</option>
-              <option value="sequence">时序图</option>
-              <option value="class">类图</option>
-              <option value="state">状态图</option>
-              <option value="er">ER 图</option>
-              <option value="gantt">甘特图</option>
-              <option value="pie">饼图</option>
-              <option value="mindmap">思维导图</option>
+            <select
+              v-model="diagramType"
+              class="select"
+            >
+              <option value="flowchart">
+                流程图
+              </option>
+              <option value="sequence">
+                时序图
+              </option>
+              <option value="class">
+                类图
+              </option>
+              <option value="state">
+                状态图
+              </option>
+              <option value="er">
+                ER 图
+              </option>
+              <option value="gantt">
+                甘特图
+              </option>
+              <option value="pie">
+                饼图
+              </option>
+              <option value="mindmap">
+                思维导图
+              </option>
             </select>
           </div>
 
@@ -633,13 +699,19 @@ onMounted(() => {
             :disabled="isGenerating || !diagramDescription.trim() || !markdown"
             @click="generateDiagram"
           >
-            <span v-if="isGenerating" class="spinner"></span>
+            <span
+              v-if="isGenerating"
+              class="spinner"
+            />
             <span v-else>📊 生成图表</span>
           </button>
         </div>
 
         <!-- Settings Tab -->
-        <div v-if="activeTab === 'settings'" class="sidebar-content settings-panel">
+        <div
+          v-if="activeTab === 'settings'"
+          class="sidebar-content settings-panel"
+        >
           <ModelSettings 
             v-model="modelConfig" 
             @save="onSettingsSaved"
@@ -647,10 +719,16 @@ onMounted(() => {
         </div>
 
         <!-- Config Warning -->
-        <div v-if="!isModelConfigured && activeTab !== 'settings'" class="config-warning">
+        <div
+          v-if="!isModelConfigured && activeTab !== 'settings'"
+          class="config-warning"
+        >
           <span class="warning-icon">⚠️</span>
           <span>请先配置 AI 模型</span>
-          <button class="btn btn-ghost btn-sm" @click="activeTab = 'settings'">
+          <button
+            class="btn btn-ghost btn-sm"
+            @click="activeTab = 'settings'"
+          >
             去配置
           </button>
         </div>
@@ -664,22 +742,25 @@ onMounted(() => {
             <span class="toolbar-title">
               {{ topic || '未命名演示文稿' }}
             </span>
-            <span v-if="slides.length" class="badge">
+            <span
+              v-if="slides.length"
+              class="badge"
+            >
               {{ slides.length }} 页
             </span>
           </div>
           <div class="toolbar-right">
             <button 
               class="btn btn-secondary" 
-              @click="checkLayout"
               :disabled="!markdown"
+              @click="checkLayout"
             >
               📐 检查布局
             </button>
             <button 
               class="btn btn-secondary" 
-              @click="downloadMarkdown"
               :disabled="!markdown"
+              @click="downloadMarkdown"
             >
               💾 下载
             </button>
@@ -710,9 +791,14 @@ onMounted(() => {
               </div>
             </div>
             
-            <div v-if="!slides.length" class="empty-state">
+            <div
+              v-if="!slides.length"
+              class="empty-state"
+            >
               <p>还没有内容</p>
-              <p class="text-muted">使用左侧工具生成演示文稿</p>
+              <p class="text-muted">
+                使用左侧工具生成演示文稿
+              </p>
             </div>
           </div>
 
@@ -737,8 +823,8 @@ onMounted(() => {
                 <button 
                   v-if="isPreviewRunning"
                   class="btn btn-ghost btn-sm"
-                  @click="openPreviewInNewTab"
                   title="在新窗口打开"
+                  @click="openPreviewInNewTab"
                 >
                   ↗
                 </button>
@@ -755,17 +841,25 @@ onMounted(() => {
               />
               
               <!-- Start preview button -->
-              <div v-else class="preview-placeholder">
+              <div
+                v-else
+                class="preview-placeholder"
+              >
                 <div class="placeholder-content">
                   <span class="placeholder-icon">🎬</span>
                   <p>启动 Slidev 预览</p>
-                  <p class="text-muted">实时渲染真实的 Slidev 效果</p>
+                  <p class="text-muted">
+                    实时渲染真实的 Slidev 效果
+                  </p>
                   <button 
                     class="btn btn-primary"
                     :disabled="!markdown || isStartingPreview"
                     @click="startPreview"
                   >
-                    <span v-if="isStartingPreview" class="spinner"></span>
+                    <span
+                      v-if="isStartingPreview"
+                      class="spinner"
+                    />
                     <span v-else>▶ 启动预览</span>
                   </button>
                 </div>
