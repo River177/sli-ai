@@ -8,19 +8,23 @@
     "build": "pnpm -r build",
     "dev": "pnpm -r --parallel dev",
     "start": "concurrently \"pnpm -F @slidev-ai/backend dev\" \"pnpm -F @slidev-ai/frontend dev\"",
-    "lint": "eslint packages/*/src/**/*.ts",
+    "lint": "eslint .",
     "type-check": "tsc -b --noEmit",
     "test": "pnpm -r test",
     "clean": "pnpm -r clean && rimraf node_modules"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "@types/node": "^20.19.25",
     "@typescript-eslint/eslint-plugin": "^8.48.1",
     "@typescript-eslint/parser": "^8.48.1",
     "concurrently": "^9.2.1",
     "eslint": "^9.39.1",
+    "eslint-plugin-vue": "^10.6.2",
+    "globals": "^16.5.0",
     "rimraf": "^6.1.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.48.1"
   },
   "packageManager": "pnpm@10.24.0"
 }
