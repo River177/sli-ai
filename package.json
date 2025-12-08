@@ -9,6 +9,7 @@
     "dev": "pnpm -r --parallel dev",
     "start": "concurrently \"pnpm -F @slidev-ai/backend dev\" \"pnpm -F @slidev-ai/frontend dev\"",
     "lint": "eslint packages/*/src/**/*.ts",
+    "type-check": "tsc -b --noEmit",
     "test": "pnpm -r test",
     "clean": "pnpm -r clean && rimraf node_modules"
   },
