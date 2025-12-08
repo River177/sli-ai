@@ -1,16 +1,16 @@
 {
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "target": "ESNext",
+    "composite": true,
     "module": "NodeNext",
-    "strict": true,
-    "verbatimModuleSyntax": true,
-    "skipLibCheck": true,
-    "types": [
-      "node"
-    ],
+    "moduleResolution": "NodeNext",
+    "outDir": "./dist",
+    "types": ["node"],
     "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx",
-    "outDir": "./dist"
+    "jsxImportSource": "hono/jsx"
   },
-  "exclude": ["node_modules"]
+  "include": ["src/**/*"],
+  "references": [
+    { "path": "../core" }
+  ]
 }
