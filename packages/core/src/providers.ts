@@ -6,7 +6,7 @@
  */
 
 import { createOpenAI } from '@ai-sdk/openai';
-import type { LanguageModelV1 } from 'ai';
+import type { LanguageModel } from 'ai';
 
 /**
  * Supported AI providers
@@ -212,7 +212,7 @@ export const PROVIDERS: ProviderInfo[] = [
  * Uses createOpenAI() for dynamic provider configuration
  * @see https://ai-sdk.dev/providers/ai-sdk-providers/openai
  */
-export function createModel(config: ModelConfig): LanguageModelV1 {
+export function createModel(config: ModelConfig): LanguageModel {
   const { provider, model, apiKey, baseUrl } = config;
   
   // Get provider info for default base URL
@@ -224,8 +224,6 @@ export function createModel(config: ModelConfig): LanguageModelV1 {
   const openaiProvider = createOpenAI({
     apiKey,
     baseURL: finalBaseUrl,
-    // Use 'compatible' mode for non-OpenAI providers
-    compatibility: provider === 'openai' ? 'strict' : 'compatible',
   });
 
   return openaiProvider(model);
@@ -337,7 +335,7 @@ export async function testModelConnection(config: ModelConfig): Promise<{
     await generateText({
       model,
       prompt: 'Say "OK" in one word.',
-      maxTokens: 10,
+      maxOutputTokens: 10,
     });
     
     return {
