@@ -227,7 +227,7 @@ function checkImageTextCrowding(
   const imageCount = images.length + (hasDiagram ? 1 : 0);
   
   // Get text content without images and diagrams
-  let textContent = slide.content
+  const textContent = slide.content
     .replace(/!\[[^\]]*\]\([^)]+\)/g, '') // Remove images
     .replace(/```mermaid[\s\S]*?```/g, '') // Remove mermaid
     .replace(/^---[\s\S]*?---\n?/, '') // Remove frontmatter
