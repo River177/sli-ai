@@ -14,20 +14,20 @@
   },
   "dependencies": {
     "@slidev-ai/core": "workspace:*",
-    "@slidev/cli": "^0.49.0",
+    "@slidev/cli": "^52.10.1",
     "@slidev/theme-default": "^0.25.0",
-    "@vueuse/core": "^10.7.0",
-    "vue": "^3.4.0",
-    "vue-router": "^4.2.5"
+    "@vueuse/core": "^14.1.0",
+    "vue": "^3.5.25",
+    "vue-router": "^4.6.3"
   },
   "devDependencies": {
-    "@types/node": "^20.10.0",
-    "@vitejs/plugin-vue": "^4.5.2",
-    "concurrently": "^8.2.2",
-    "dotenv": "^16.3.1",
-    "tsx": "^4.6.2",
-    "typescript": "^5.3.2",
-    "vite": "^5.0.10",
-    "vue-tsc": "^1.8.25"
+    "@types/node": "^20.19.25",
+    "@vitejs/plugin-vue": "^6.0.2",
+    "concurrently": "^9.2.1",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.7",
+    "vue-tsc": "^3.1.7"
   }
 }
