@@ -17,7 +17,6 @@
     "@typescript-eslint/parser": "^8.48.1",
     "eslint": "^9.39.1",
     "rimraf": "^6.1.2",
-    "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   },
   "engines": {

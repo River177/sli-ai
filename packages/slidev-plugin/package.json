@@ -20,8 +20,8 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/index.ts src/client/index.ts --format esm --dts --clean",
-    "dev": "tsup src/index.ts src/client/index.ts --format esm --dts --watch",
+    "build": "tsdown src/index.ts src/client/index.ts --format esm --dts --clean",
+    "dev": "tsdown src/index.ts src/client/index.ts --format esm --dts --watch",
     "clean": "rimraf dist"
   },
   "dependencies": {
@@ -30,7 +30,7 @@
   "devDependencies": {
     "@types/node": "^20.19.25",
     "rimraf": "^6.1.2",
-    "tsup": "^8.5.1",
+    "tsdown": "^0.17.1",
     "typescript": "^5.9.3",
     "vite": "^7.2.7",
     "vue": "^3.5.25"
