@@ -1,0 +1,26 @@
+{
+  "name": "@slidev-ai/backend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Backend API for Slidev-AI",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsdown src/index.ts --format esm --dts --clean",
+    "start": "node dist/index.mjs"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.7",
+    "@slidev-ai/core": "workspace:*",
+    "@slidev/cli": "^52.10.1",
+    "@slidev/theme-default": "^0.25.0",
+    "dotenv": "^17.2.3",
+    "hono": "^4.10.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.25",
+    "tsdown": "^0.17.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}

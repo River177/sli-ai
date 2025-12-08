@@ -117,7 +117,7 @@ export const PROVIDERS: ProviderInfo[] = [
     website: 'https://platform.deepseek.com',
     requiresApiKey: true,
     supportsCustomBaseUrl: true,
-    defaultBaseUrl: 'https://api.deepseek.com',
+    defaultBaseUrl: 'https://api.deepseek.com/v1',
     models: [
       { id: 'deepseek-chat', name: 'DeepSeek Chat', description: '对话模型', maxTokens: 64000 },
       { id: 'deepseek-coder', name: 'DeepSeek Coder', description: '代码模型', maxTokens: 64000 },
@@ -226,7 +226,7 @@ export function createModel(config: ModelConfig): LanguageModel {
     baseURL: finalBaseUrl,
   });
 
-  return openaiProvider(model);
+  return openaiProvider.chat(model);
 }
 
 /**
