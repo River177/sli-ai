@@ -8,7 +8,7 @@
 import { generateText, streamText, type StreamTextResult, type LanguageModel } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import type { AIConfig, GenerateOptions, EnhanceOptions, LayoutIssue } from './types.js';
-import { createModel, createStreamingModel, type ModelConfig } from './providers.js';
+import { createModel, type ModelConfig } from './providers.js';
 import { 
   getGeneratePrompt, 
   getEditSlidePrompt, 

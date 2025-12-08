@@ -13,7 +13,6 @@ import type {
   ImageOptions,
   LayoutIssue,
   EditSlideResult,
-  ToolType,
   ToolCallResult,
   OrchestratorState,
   LayoutCheckConfig,
@@ -104,7 +103,7 @@ export class SlidevAIOrchestrator {
     const maxIterations = options.maxIterations ?? DEFAULT_MAX_FIX_ITERATIONS;
     const autoFix = options.autoFix ?? true;
     
-    let currentSlide = getSlide(deck, slideIndex);
+    const currentSlide = getSlide(deck, slideIndex);
     if (!currentSlide) {
       return {
         success: false,

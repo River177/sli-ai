@@ -6,9 +6,6 @@
 import matter from 'gray-matter';
 import type { SlideDeck, Slide, SlidevFrontmatter } from './types.js';
 
-/** Slide separator regex - matches --- on its own line */
-const SLIDE_SEPARATOR = /^---$/gm;
-
 /** Frontmatter with optional YAML content */
 const SLIDE_FRONTMATTER_REGEX = /^---\n([\s\S]*?)\n---\n?/;
 
@@ -272,7 +269,7 @@ export function extractCodeBlocks(slide: Slide): Array<{ language: string; code:
   const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
   const blocks: Array<{ language: string; code: string }> = [];
   
-  let match;
+  let match: RegExpExecArray | null;
   while ((match = codeBlockRegex.exec(slide.content)) !== null) {
     blocks.push({
       language: match[1] || 'text',
@@ -290,7 +287,7 @@ export function extractImages(slide: Slide): Array<{ alt: string; src: string }>
   const imageRegex = /!\[([^\]]*)\]\(([^)]+)\)/g;
   const images: Array<{ alt: string; src: string }> = [];
   
-  let match;
+  let match: RegExpExecArray | null;
   while ((match = imageRegex.exec(slide.content)) !== null) {
     images.push({
       alt: match[1],
@@ -315,7 +312,7 @@ export function extractMermaidDiagrams(slide: Slide): string[] {
   const mermaidRegex = /```mermaid\n([\s\S]*?)```/g;
   const diagrams: string[] = [];
   
-  let match;
+  let match: RegExpExecArray | null;
   while ((match = mermaidRegex.exec(slide.content)) !== null) {
     diagrams.push(match[1].trim());
   }

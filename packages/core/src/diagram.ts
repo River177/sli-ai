@@ -286,7 +286,7 @@ export function updateDiagramsInSlide(
   let index = 0;
   return slideContent.replace(
     /```mermaid\n([\s\S]*?)```/g,
-    (match, code) => {
+    (_match, code) => {
       const updatedCode = updateFn(code.trim(), index);
       index++;
       return formatMermaidMarkdown(updatedCode);
