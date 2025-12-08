@@ -7,6 +7,7 @@
   "scripts": {
     "build": "pnpm -r build",
     "dev": "pnpm -r --parallel dev",
+    "start": "concurrently \"pnpm -F @slidev-ai/backend dev\" \"pnpm -F @slidev-ai/frontend dev\"",
     "lint": "eslint packages/*/src/**/*.ts",
     "test": "pnpm -r test",
     "clean": "pnpm -r clean && rimraf node_modules"
@@ -15,6 +16,7 @@
     "@types/node": "^20.19.25",
     "@typescript-eslint/eslint-plugin": "^8.48.1",
     "@typescript-eslint/parser": "^8.48.1",
+    "concurrently": "^9.2.1",
     "eslint": "^9.39.1",
     "rimraf": "^6.1.2",
     "typescript": "^5.9.3"
