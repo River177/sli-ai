@@ -1,0 +1,28 @@
+{
+  "name": "@slidev-ai/frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Web UI for Slidev-AI",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "slidev": "slidev --open=false"
+  },
+  "dependencies": {
+    "@slidev-ai/core": "workspace:*",
+    "@slidev/cli": "^52.10.1",
+    "@slidev/theme-default": "^0.25.0",
+    "@vueuse/core": "^14.1.0",
+    "vue": "^3.5.25",
+    "vue-router": "^4.6.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.25",
+    "@vitejs/plugin-vue": "^6.0.2",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.7",
+    "vue-tsc": "^3.1.7"
+  }
+}

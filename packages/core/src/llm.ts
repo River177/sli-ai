@@ -5,7 +5,7 @@
  * @see https://ai-sdk.dev/docs/ai-sdk-core/generating-text
  */
 
-import { generateText, streamText, type StreamTextResult, type LanguageModelV1 } from 'ai';
+import { generateText, streamText, type StreamTextResult, type LanguageModel } from 'ai';
 import { createOpenAI } from '@ai-sdk/openai';
 import type { AIConfig, GenerateOptions, EnhanceOptions, LayoutIssue } from './types.js';
 import { createModel, createStreamingModel, type ModelConfig } from './providers.js';
@@ -30,7 +30,7 @@ const DEFAULT_CONFIG = {
  * Get the AI model instance from config
  * Supports both legacy AIConfig and new ModelConfig
  */
-export function getModel(config: AIConfig | ModelConfig): LanguageModelV1 {
+export function getModel(config: AIConfig | ModelConfig): LanguageModel {
   // Check if it's a ModelConfig (has provider field)
   if ('provider' in config && config.provider) {
     return createModel(config as ModelConfig);
@@ -72,7 +72,7 @@ export async function generatePresentation(
     system: SLIDEV_SYSTEM_PROMPT,
     prompt,
     temperature: settings.temperature,
-    maxTokens: settings.maxTokens,
+    maxOutputTokens: settings.maxTokens,
   });
 
   return cleanMarkdownOutput(text);
@@ -103,7 +103,7 @@ export async function* generatePresentationStream(
     system: SLIDEV_SYSTEM_PROMPT,
     prompt,
     temperature: settings.temperature,
-    maxTokens: settings.maxTokens,
+    maxOutputTokens: settings.maxTokens,
   });
 
   let fullText = '';
@@ -132,7 +132,7 @@ export function createPresentationStream(
     system: SLIDEV_SYSTEM_PROMPT,
     prompt,
     temperature: settings.temperature,
-    maxTokens: settings.maxTokens,
+    maxOutputTokens: settings.maxTokens,
   });
 }
 
@@ -154,7 +154,7 @@ export async function editSlide(
     system: SLIDEV_SYSTEM_PROMPT,
     prompt,
     temperature: settings.temperature,
-    maxTokens: Math.min(settings.maxTokens, 2048), // Limit for single slide
+    maxOutputTokens: Math.min(settings.maxTokens, 2048), // Limit for single slide
   });
 
   return cleanMarkdownOutput(text);
@@ -178,7 +178,7 @@ export async function* editSlideStream(
     system: SLIDEV_SYSTEM_PROMPT,
     prompt,
     temperature: settings.temperature,
-    maxTokens: Math.min(settings.maxTokens, 2048),
+    maxOutputTokens: Math.min(settings.maxTokens, 2048),
   });
 
   let fullText = '';
@@ -207,7 +207,7 @@ export async function fixLayoutIssues(
     system: SLIDEV_SYSTEM_PROMPT,
     prompt,
     temperature: settings.temperature,
-    maxTokens: Math.min(settings.maxTokens, 2048),
+    maxOutputTokens: Math.min(settings.maxTokens, 2048),
   });
 
   return cleanMarkdownOutput(text);
@@ -230,7 +230,7 @@ export async function splitSlide(
     system: SLIDEV_SYSTEM_PROMPT,
     prompt,
     temperature: settings.temperature,
-    maxTokens: settings.maxTokens,
+    maxOutputTokens: settings.maxTokens,
   });
 
   // Split the result by --- separator
@@ -256,7 +256,7 @@ export async function generateCustom(
     system: systemPrompt,
     prompt: userPrompt,
     temperature: settings.temperature,
-    maxTokens: settings.maxTokens,
+    maxOutputTokens: settings.maxTokens,
   });
 
   return text;
@@ -278,7 +278,7 @@ export async function* generateCustomStream(
     system: systemPrompt,
     prompt: userPrompt,
     temperature: settings.temperature,
-    maxTokens: settings.maxTokens,
+    maxOutputTokens: settings.maxTokens,
   });
 
   let fullText = '';
@@ -311,7 +311,7 @@ ${slideContent}
 
 Output as JSON array with objects containing "category" and "suggestion" fields.`,
     temperature: settings.temperature,
-    maxTokens: 1024,
+    maxOutputTokens: 1024,
   });
 
   try {
