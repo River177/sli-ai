@@ -21,9 +21,5 @@
     "rimraf": "^6.1.2",
     "typescript": "^5.9.3"
   },
-  "engines": {
-    "node": ">=18.0.0",
-    "pnpm": ">=8.0.0"
-  },
   "packageManager": "pnpm@10.24.0"
 }
