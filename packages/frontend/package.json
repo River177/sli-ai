@@ -1,5 +1,5 @@
 {
-  "name": "@slidev-ai/web-ui",
+  "name": "@slidev-ai/frontend",
   "version": "0.1.0",
   "private": true,
   "description": "Web UI for Slidev-AI",
